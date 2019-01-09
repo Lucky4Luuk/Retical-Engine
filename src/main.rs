@@ -5,22 +5,14 @@ extern crate camera_controllers;
 extern crate gfx;
 extern crate shader_version;
 
+mod vertex;
+use crate::vertex::Vertex;
+pub mod chunk;
+
 //-----------------------------------------
 // setting up vertex data and the pipeline;
 
-impl Vertex {
-    fn new(pos: [i8; 3], tc: [i8; 2]) -> Vertex {
-        Vertex {
-            a_pos: [pos[0], pos[1], pos[2], 1],
-            a_tex_coord: tc,
-        }
-    }
-}
 
-gfx_vertex_struct!( Vertex {
-    a_pos: [i8; 4] = "a_pos",
-    a_tex_coord: [i8; 2] = "a_tex_coord",
-});
 
 gfx_pipeline!( pipe {
     vbuf: gfx::VertexBuffer<Vertex> = (),
@@ -46,7 +38,7 @@ fn main() {
     };
 
     //set up opengl with the right version;
-    let opengl = OpenGL::V3_2;
+    let opengl = OpenGL::V4_1;
 
     let mut window: PistonWindow =
         WindowSettings::new("The Most Epic Minecraft Client Ever", [640, 480])
@@ -59,52 +51,9 @@ fn main() {
 
     let ref mut factory = window.factory.clone();
 
-    /*
-    let vertex_data = vec![
-        //top (0, 0, 1)
-        Vertex::new([-1, -1,  1], [0, 0]),
-        Vertex::new([ 1, -1,  1], [1, 0]),
-        Vertex::new([ 1,  1,  1], [1, 1]),
-        Vertex::new([-1,  1,  1], [0, 1]),
-        //bottom (0, 0, -1)
-        Vertex::new([ 1,  1, -1], [0, 0]),
-        Vertex::new([-1,  1, -1], [1, 0]),
-        Vertex::new([-1, -1, -1], [1, 1]),
-        Vertex::new([ 1, -1, -1], [0, 1]),
-        //right (1, 0, 0)
-        Vertex::new([ 1, -1, -1], [0, 0]),
-        Vertex::new([ 1,  1, -1], [1, 0]),
-        Vertex::new([ 1,  1,  1], [1, 1]),
-        Vertex::new([ 1, -1,  1], [0, 1]),
-        //left (-1, 0, 0)
-        Vertex::new([-1,  1,  1], [0, 0]),
-        Vertex::new([-1, -1,  1], [1, 0]),
-        Vertex::new([-1, -1, -1], [1, 1]),
-        Vertex::new([-1,  1, -1], [0, 1]),
-        //front (0, 1, 0)
-        Vertex::new([-1,  1, -1], [0, 0]),
-        Vertex::new([ 1,  1, -1], [1, 0]),
-        Vertex::new([ 1,  1,  1], [1, 1]),
-        Vertex::new([-1,  1,  1], [0, 1]),
-        //back (0, -1, 0)
-        Vertex::new([ 1, -1,  1], [0, 0]),
-        Vertex::new([-1, -1,  1], [1, 0]),
-        Vertex::new([-1, -1, -1], [1, 1]),
-        Vertex::new([ 1, -1, -1], [0, 1]),
-    ];
-    */
+    let c = chunk::Chunk::new();
 
-    let vertex_data = vec![
-        Vertex::new([-1,-1,-1], [0,0]),
-        Vertex::new([ 0, 0,-1], [0,0]),
-        Vertex::new([ 1,-1,-1], [0,0]),
-    ];
-
-    let index_data: &[u16] = &[
-         0, 1, 2,
-    ]; //TODO: Make this actually gather all vertices in here, aka all voxels. Will be abstracted into chunk classes however.
-
-    let (vbuf, slice) = factory.create_vertex_buffer_with_slice(&vertex_data, index_data);
+    let (vbuf, slice) = factory.create_vertex_buffer_with_slice(&(c.vertex_data), c.index_data.as_slice());
 
     let texels = [
         [0xff, 0xff, 0xff, 0x00],
