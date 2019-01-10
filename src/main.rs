@@ -41,7 +41,7 @@ fn main() {
     let opengl = OpenGL::V4_1;
 
     let mut window: PistonWindow =
-        WindowSettings::new("The Most Epic Minecraft Client Ever", [640, 480])
+        WindowSettings::new("The Most Epic Minecraft Client Ever", [1280, 720])
         .exit_on_esc(true)
         //.samples(4) //TODO: read documentation lol, gotta check if this is AA
         .opengl(opengl)
