@@ -2,11 +2,11 @@ use crate::vertex::Vertex;
 
 pub struct Chunk {
     data: [[[u8; 64]; 64]; 64],
-    X: i8,
-    Y: i8,
+    X: i16,
+    Y: i16,
     loaded: bool,
     pub vertex_data: Vec<Vertex>,
-    pub index_data: Vec<u16>,
+    pub index_data: Vec<u32>,
 }
 
 impl Chunk {
@@ -30,12 +30,12 @@ impl Chunk {
     pub fn update_all(&mut self) {
         self.vertex_data = Vec::new();
         self.index_data = Vec::new();
-        let mut i = 0;
+        let mut i: u32 = 0;
         for x in 0..64 {
             for y in 0..64 {
                 for z in 0..64 {
                     if self.data[x][y][z] == 1 {
-                        self.vertex_data.push(Vertex::new([(x as i8)*self.X, y as i8, (z as i8)*self.Y], [0,0]));
+                        self.vertex_data.push(Vertex::new([(x as i16)*self.X, y as i16, (z as i16)*self.Y], [0,0]));
                         self.index_data.push(i);
                         i += 1;
                     }
