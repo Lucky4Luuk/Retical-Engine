@@ -1,5 +1,6 @@
 use crate::vertex::Vertex;
 
+#[derive(Clone)]
 pub struct Chunk {
     data: [[[u8; 64]; 64]; 64],
     X: i8,
@@ -24,18 +25,18 @@ impl Chunk {
             index_data: vec![0, 1, 2],
         };
         tmp.update_all();
-        return tmp;
+        return tmp.Clone();
     }
 
     pub fn update_all(mut self) {
-        self.vertex_data = Vec<Vertex>::new();
-        self.index_data = Vec<u16>::new();
+        self.vertex_data = Vec::new();
+        self.index_data = Vec::new();
         let mut i = 0;
         for x in 0..64 {
             for y in 0..64 {
                 for z in 0..64 {
-                    if data[x][y][z] == 1 {
-                        self.vertex_data.push(Vertex::new([x*self.X, y, z*self.Y], [0,0]));
+                    if self.data[x][y][z] == 1 {
+                        self.vertex_data.push(Vertex::new([(x as i8)*self.X, y as i8, (z as i8)*self.Y], [0,0]));
                         self.index_data.push(i);
                         i += 1;
                     }
