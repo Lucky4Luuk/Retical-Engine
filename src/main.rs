@@ -17,6 +17,7 @@ pub mod chunk;
 gfx_pipeline!( pipe {
     vbuf: gfx::VertexBuffer<Vertex> = (),
     u_model_view_proj: gfx::Global<[[f32; 4]; 4]> = "u_model_view_proj",
+    u_view_dir: gfx::Global<[f32; 3]> = "u_view_dir",
     t_color: gfx::TextureSampler<[f32; 4]> = "t_color",
     out_color: gfx::RenderTarget<::gfx::format::Srgba8> = "o_Color",
     out_depth: gfx::DepthTarget<::gfx::format::DepthStencil> =
@@ -54,6 +55,8 @@ fn main() {
     let c = chunk::Chunk::new();
 
     let (vbuf, slice) = factory.create_vertex_buffer_with_slice(&(c.vertex_data), c.index_data.as_slice());
+    //let vbuf = factory.create_vertex_buffer(&(c.vertex_data));
+    //let slice = gfx::Slice::new_match_vertex_buffer(&vbuf);
 
     let texels = [
         [0xff, 0xff, 0xff, 0x00],
@@ -105,13 +108,14 @@ fn main() {
     let model = vecmath::mat4_id();
     let mut projection = get_projection(&window);
     let mut first_person = FirstPerson::new(
-        [0.5, 0.5, 4.0],
+        [1.0, 1.0, 1.0],
         FirstPersonSettings::keyboard_wasd()
     );
 
     let mut data = pipe::Data {
             vbuf: vbuf.clone(),
             u_model_view_proj: [[0.0; 4]; 4],
+            u_view_dir: [0.0; 3],
             t_color: (texture_view, factory.create_sampler(sinfo)),
             out_color: window.output_color.clone(),
             out_depth: window.output_stencil.clone(),
@@ -131,6 +135,7 @@ fn main() {
                 first_person.camera(args.ext_dt).orthogonal(),
                 projection
             );
+            data.u_view_dir = first_person.direction;
             window.encoder.draw(&slice, &pso, &data);
         });
 

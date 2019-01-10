@@ -30,18 +30,20 @@ impl Chunk {
     pub fn update_all(&mut self) {
         self.vertex_data = Vec::new();
         self.index_data = Vec::new();
-        let mut i: u32 = 0;
-        for x in 0..64 {
-            for y in 0..64 {
-                for z in 0..64 {
+        for x in 0..1 {
+            for y in 0..1 {
+                for z in 0..1 {
                     if self.data[x][y][z] == 1 {
-                        self.vertex_data.push(Vertex::new([(x as i16)*self.X, y as i16, (z as i16)*self.Y], [0,0]));
-                        self.index_data.push(i);
-                        i += 1;
+                        self.vertex_data.push(Vertex::new([(x as i16)+(self.X*64), y as i16, (z as i16)+(self.Y*64)], [0,0]));
                     }
                 }
             }
         }
+        for i in 0..self.vertex_data.len() {
+            self.index_data.push(i as u32);
+        }
+        println!("{} vertices", self.vertex_data.len());
+        println!("{} indices", self.index_data.len());
         //TODO: Make this actually gather all vertices in here, aka all voxels. Will be abstracted into chunk classes however.
         //RhoneRanger had a great suggestion.
         //If we order the data according to the block type, we could use a simple
