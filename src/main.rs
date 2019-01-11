@@ -10,6 +10,7 @@ mod vertex;
 use crate::vertex::Vertex;
 use rand::Rng;
 pub mod chunk;
+pub mod world;
 
 //-----------------------------------------
 // setting up vertex data and the pipeline;

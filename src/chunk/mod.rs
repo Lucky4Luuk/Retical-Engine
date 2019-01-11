@@ -37,7 +37,13 @@ impl Chunk {
     }
 
     pub fn update_block(&mut self, x: u8, y: u8, z: u8, block_type: u8) {
+        if x < 64 && y < 64 && z < 64 {
+            self.data[x as usize][y as usize][z as usize] = block_type;
+        }
 
+        //Update the chunk fully because I haven't yet
+        //figured out how I want to remove a certain vertex from the vertex list
+        self.update_all();
     }
 
     pub fn update_all(&mut self) {
