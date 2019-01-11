@@ -4,20 +4,22 @@ extern crate camera_controllers;
 #[macro_use]
 extern crate gfx;
 extern crate shader_version;
+extern crate rand;
 
 mod vertex;
 use crate::vertex::Vertex;
+use rand::Rng;
 pub mod chunk;
 
 //-----------------------------------------
 // setting up vertex data and the pipeline;
 
-
-
 gfx_pipeline!( pipe {
     vbuf: gfx::VertexBuffer<Vertex> = (),
     u_model_view_proj: gfx::Global<[[f32; 4]; 4]> = "u_model_view_proj",
     u_view_dir: gfx::Global<[f32; 3]> = "u_view_dir",
+    u_tex_size: gfx::Global<f32> = "u_tex_size",
+    u_atlas_size: gfx::Global<f32> = "u_atlas_size",
     t_color: gfx::TextureSampler<[f32; 4]> = "t_color",
     out_color: gfx::RenderTarget<::gfx::format::Srgba8> = "o_Color",
     out_depth: gfx::DepthTarget<::gfx::format::DepthStencil> =
@@ -71,15 +73,15 @@ fn main() {
         &[&texels]).unwrap();
     */
 
-    let texture = Texture::from_path(factory, "../assets/textures/dirt.png", Flip::None, &TextureSettings::new()).unwrap();
+    let texture = Texture::from_path(factory, "../assets/textures/pixel_perfection.png", Flip::None, &TextureSettings::new()).unwrap();
     let texture_view = texture.view;
 
     let sinfo = gfx::texture::SamplerInfo::new(
-        gfx::texture::FilterMethod::Bilinear,
+        gfx::texture::FilterMethod::Scale,
         gfx::texture::WrapMode::Clamp);
 
     let glsl = opengl.to_glsl();
-    
+
     let shader_set = factory.create_shader_set_geometry(
         Shaders::new().set(GLSL::V1_50, include_str!("../assets/shaders/vertex.glsl")).get(glsl).unwrap().as_bytes(),
         Shaders::new().set(GLSL::V1_50, include_str!("../assets/shaders/geometry.glsl")).get(glsl).unwrap().as_bytes(),
@@ -109,6 +111,8 @@ fn main() {
             vbuf: vbuf.clone(),
             u_model_view_proj: [[0.0; 4]; 4],
             u_view_dir: [0.0; 3],
+            u_tex_size: 16.0,
+            u_atlas_size: 256.0,
             t_color: (texture_view, factory.create_sampler(sinfo)),
             out_color: window.output_color.clone(),
             out_depth: window.output_stencil.clone(),

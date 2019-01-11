@@ -8,11 +8,16 @@ in VS_OUT {
 
 out vec2 v_UV;
 out vec3 v_Normal;
+out vec4 v_Atlas_UV;
 
 uniform mat4 u_model_view_proj;
+uniform float u_tex_size;
+uniform float u_atlas_size;
 
 void main() {
   //v_TexCoord = gs_in[0].v_TexCoord;
+  v_Atlas_UV.xy = gs_in[0].v_TexCoord / vec2(u_atlas_size) * vec2(u_tex_size);
+  v_Atlas_UV.zw = vec2(u_tex_size / u_atlas_size);
 
   //Set up some variables to quickly use
   vec3 FRONT_NORMAL  = vec3( 0.0, 0.0, 1.0);

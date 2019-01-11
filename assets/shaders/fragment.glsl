@@ -2,6 +2,7 @@
 
 in vec2 v_UV;
 in vec3 v_Normal;
+in vec4 v_Atlas_UV;
 
 out vec4 o_Color;
 
@@ -18,7 +19,7 @@ void main() {
   //o_Color = mix(tex, vec4(0.0,0.0,0.0,0.0), blend*1.0);
   //o_Color = vec4(v_UV, 0.0, 1.0);
   //o_Color = vec4(gs_out.v_Normal, 1.0);
-  vec4 tex_col = texture(t_color, v_UV);
+  vec4 tex_col = texture(t_color, v_Atlas_UV.xy + v_Atlas_UV.zw * v_UV);
   float attenuation = 1.0 - clamp(dot(light_dir, v_Normal), 0.0, 1.0);
   o_Color = tex_col * attenuation;
 }

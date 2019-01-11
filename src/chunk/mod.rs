@@ -1,4 +1,6 @@
 use crate::vertex::Vertex;
+use rand::Rng;
+use std::num;
 
 pub struct Chunk {
     data: [[[u8; 64]; 64]; 64],
@@ -12,7 +14,7 @@ pub struct Chunk {
 impl Chunk {
     pub fn new() -> Chunk {
         let mut tmp = Chunk {
-            data: [[[1; 64]; 64]; 64],
+            data: [[[0; 64]; 64]; 64],
             X: 0,
             Y: 0,
             loaded: true,
@@ -23,6 +25,13 @@ impl Chunk {
             ],
             index_data: vec![0, 1, 2],
         };
+        for x in 0..64 {
+            for y in 0..64 {
+                for z in 0..64 {
+                    tmp.data[x][y][z] = rand::thread_rng().gen_range(1, 4) as u8;
+                }
+            }
+        }
         tmp.update_all();
         return tmp;
     }
@@ -39,6 +48,10 @@ impl Chunk {
                 for z in 0..64 {
                     if self.data[x][y][z] == 1 {
                         self.vertex_data.push(Vertex::new([(x as i16)+(self.X*64), y as i16, (z as i16)+(self.Y*64)], [0,0]));
+                    } else if self.data[x][y][z] == 2 {
+                        self.vertex_data.push(Vertex::new([(x as i16)+(self.X*64), y as i16, (z as i16)+(self.Y*64)], [1,0]));
+                    } else if self.data[x][y][z] == 3 {
+                        self.vertex_data.push(Vertex::new([(x as i16)+(self.X*64), y as i16, (z as i16)+(self.Y*64)], [2,0]));
                     }
                 }
             }
