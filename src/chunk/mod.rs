@@ -27,12 +27,16 @@ impl Chunk {
         return tmp;
     }
 
+    pub fn update_block(&mut self, x: u8, y: u8, z: u8, block_type: u8) {
+
+    }
+
     pub fn update_all(&mut self) {
         self.vertex_data = Vec::new();
         self.index_data = Vec::new();
-        for x in 0..1 {
-            for y in 0..1 {
-                for z in 0..1 {
+        for x in 0..64 {
+            for y in 0..64 {
+                for z in 0..64 {
                     if self.data[x][y][z] == 1 {
                         self.vertex_data.push(Vertex::new([(x as i16)+(self.X*64), y as i16, (z as i16)+(self.Y*64)], [0,0]));
                     }

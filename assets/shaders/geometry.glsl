@@ -15,136 +15,186 @@ void main() {
   //v_TexCoord = gs_in[0].v_TexCoord;
 
   //Set up some variables to quickly use
-  vec3 FRONT_NORMAL = vec3( 0.0, 0.0, 1.0);
-  vec3 BACK_NORMAL  = vec3( 0.0, 0.0,-1.0);
+  vec3 FRONT_NORMAL  = vec3( 0.0, 0.0, 1.0);
+  vec3 BACK_NORMAL   = vec3( 0.0, 0.0,-1.0);
+  vec3 LEFT_NORMAL   = vec3(-1.0, 0.0, 0.0);
+  vec3 RIGHT_NORMAL  = vec3( 1.0, 0.0, 0.0);
+  vec3 TOP_NORMAL    = vec3( 0.0, 1.0, 0.0);
+  vec3 BOTTOM_NORMAL = vec3( 0.0,-1.0, 0.0);
 
   //Front
   gl_Position = gl_in[0].gl_Position + u_model_view_proj * vec4(-0.5,-0.5, 0.5, 1.0);
   v_Normal = FRONT_NORMAL;
-  v_UV = vec2(0.0, 0.0);
+  v_UV = vec2(1.0, 1.0);
   EmitVertex();
   gl_Position = gl_in[0].gl_Position + u_model_view_proj * vec4( 0.5,-0.5, 0.5, 1.0);
   v_Normal = FRONT_NORMAL;
-  v_UV = vec2(1.0, 0.0);
+  v_UV = vec2(0.0, 1.0);
   EmitVertex();
   gl_Position = gl_in[0].gl_Position + u_model_view_proj * vec4( 0.5, 0.5, 0.5, 1.0);
   v_Normal = FRONT_NORMAL;
-  v_UV = vec2(1.0, 1.0);
+  v_UV = vec2(0.0, 0.0);
   EmitVertex();
   EndPrimitive();
 
   gl_Position = gl_in[0].gl_Position + u_model_view_proj * vec4( 0.5, 0.5, 0.5, 1.0);
   v_Normal = FRONT_NORMAL;
-  v_UV = vec2(1.0, 1.0);
+  v_UV = vec2(0.0, 0.0);
   EmitVertex();
   gl_Position = gl_in[0].gl_Position + u_model_view_proj * vec4(-0.5, 0.5, 0.5, 1.0);
   v_Normal = FRONT_NORMAL;
-  v_UV = vec2(0.0, 1.0);
+  v_UV = vec2(1.0, 0.0);
   EmitVertex();
   gl_Position = gl_in[0].gl_Position + u_model_view_proj * vec4(-0.5,-0.5, 0.5, 1.0);
   v_Normal = FRONT_NORMAL;
-  v_UV = vec2(0.0, 0.0);
+  v_UV = vec2(1.0, 1.0);
   EmitVertex();
   EndPrimitive();
 
   //Back
   gl_Position = gl_in[0].gl_Position + u_model_view_proj * vec4( 0.5, 0.5,-0.5, 1.0);
   v_Normal = BACK_NORMAL;
+  v_UV = vec2(0.0, 0.0);
   EmitVertex();
   gl_Position = gl_in[0].gl_Position + u_model_view_proj * vec4( 0.5,-0.5,-0.5, 1.0);
   v_Normal = BACK_NORMAL;
+  v_UV = vec2(0.0, 1.0);
   EmitVertex();
   gl_Position = gl_in[0].gl_Position + u_model_view_proj * vec4(-0.5,-0.5,-0.5, 1.0);
   v_Normal = BACK_NORMAL;
+  v_UV = vec2(1.0, 1.0);
   EmitVertex();
   EndPrimitive();
 
   gl_Position = gl_in[0].gl_Position + u_model_view_proj * vec4(-0.5,-0.5,-0.5, 1.0);
   v_Normal = BACK_NORMAL;
+  v_UV = vec2(1.0, 1.0);
   EmitVertex();
   gl_Position = gl_in[0].gl_Position + u_model_view_proj * vec4(-0.5, 0.5,-0.5, 1.0);
   v_Normal = BACK_NORMAL;
+  v_UV = vec2(1.0, 0.0);
   EmitVertex();
   gl_Position = gl_in[0].gl_Position + u_model_view_proj * vec4( 0.5, 0.5,-0.5, 1.0);
   v_Normal = BACK_NORMAL;
+  v_UV = vec2(0.0, 0.0);
   EmitVertex();
   EndPrimitive();
 
   //Left
   gl_Position = gl_in[0].gl_Position + u_model_view_proj * vec4(-0.5,-0.5,-0.5, 1.0);
-  v_TexCoord = vec2(0.0, 0.0);
+  v_Normal = LEFT_NORMAL;
+  v_UV = vec2(0.0, 1.0);
   EmitVertex();
   gl_Position = gl_in[0].gl_Position + u_model_view_proj * vec4(-0.5,-0.5, 0.5, 1.0);
-  v_TexCoord = vec2(0.0, 1.0);
+  v_Normal = LEFT_NORMAL;
+  v_UV = vec2(1.0, 1.0);
   EmitVertex();
   gl_Position = gl_in[0].gl_Position + u_model_view_proj * vec4(-0.5, 0.5, 0.5, 1.0);
-  v_TexCoord = vec2(1.0, 1.0);
+  v_Normal = LEFT_NORMAL;
+  v_UV = vec2(1.0, 0.0);
   EmitVertex();
   EndPrimitive();
 
   gl_Position = gl_in[0].gl_Position + u_model_view_proj * vec4(-0.5, 0.5, 0.5, 1.0);
+  v_Normal = LEFT_NORMAL;
+  v_UV = vec2(1.0, 0.0);
   EmitVertex();
   gl_Position = gl_in[0].gl_Position + u_model_view_proj * vec4(-0.5, 0.5,-0.5, 1.0);
+  v_Normal = LEFT_NORMAL;
+  v_UV = vec2(0.0, 0.0);
   EmitVertex();
   gl_Position = gl_in[0].gl_Position + u_model_view_proj * vec4(-0.5,-0.5,-0.5, 1.0);
+  v_Normal = LEFT_NORMAL;
+  v_UV = vec2(0.0, 1.0);
   EmitVertex();
   EndPrimitive();
 
   //Right
   gl_Position = gl_in[0].gl_Position + u_model_view_proj * vec4( 0.5, 0.5, 0.5, 1.0);
+  v_Normal = RIGHT_NORMAL;
+  v_UV = vec2(1.0, 0.0);
   EmitVertex();
   gl_Position = gl_in[0].gl_Position + u_model_view_proj * vec4( 0.5,-0.5, 0.5, 1.0);
+  v_Normal = RIGHT_NORMAL;
+  v_UV = vec2(1.0, 1.0);
   EmitVertex();
   gl_Position = gl_in[0].gl_Position + u_model_view_proj * vec4( 0.5,-0.5,-0.5, 1.0);
+  v_Normal = RIGHT_NORMAL;
+  v_UV = vec2(0.0, 1.0);
   EmitVertex();
   EndPrimitive();
 
   gl_Position = gl_in[0].gl_Position + u_model_view_proj * vec4( 0.5,-0.5,-0.5, 1.0);
+  v_Normal = RIGHT_NORMAL;
+  v_UV = vec2(0.0, 1.0);
   EmitVertex();
   gl_Position = gl_in[0].gl_Position + u_model_view_proj * vec4( 0.5, 0.5,-0.5, 1.0);
+  v_Normal = RIGHT_NORMAL;
+  v_UV = vec2(0.0, 0.0);
   EmitVertex();
   gl_Position = gl_in[0].gl_Position + u_model_view_proj * vec4( 0.5, 0.5, 0.5, 1.0);
+  v_Normal = RIGHT_NORMAL;
+  v_UV = vec2(1.0, 0.0);
   EmitVertex();
   EndPrimitive();
 
   //Top
   gl_Position = gl_in[0].gl_Position + u_model_view_proj * vec4(-0.5, 0.5,-0.5, 1.0);
+  v_Normal = TOP_NORMAL;
   v_UV = vec2(0.0, 0.0);
   EmitVertex();
   gl_Position = gl_in[0].gl_Position + u_model_view_proj * vec4(-0.5, 0.5, 0.5, 1.0);
+  v_Normal = TOP_NORMAL;
   v_UV = vec2(0.0, 1.0);
   EmitVertex();
   gl_Position = gl_in[0].gl_Position + u_model_view_proj * vec4( 0.5, 0.5, 0.5, 1.0);
+  v_Normal = TOP_NORMAL;
   v_UV = vec2(1.0, 1.0);
   EmitVertex();
   EndPrimitive();
 
   gl_Position = gl_in[0].gl_Position + u_model_view_proj * vec4( 0.5, 0.5, 0.5, 1.0);
+  v_Normal = TOP_NORMAL;
+  v_UV = vec2(1.0, 1.0);
   EmitVertex();
   gl_Position = gl_in[0].gl_Position + u_model_view_proj * vec4( 0.5, 0.5,-0.5, 1.0);
+  v_Normal = TOP_NORMAL;
+  v_UV = vec2(1.0, 0.0);
   EmitVertex();
   gl_Position = gl_in[0].gl_Position + u_model_view_proj * vec4(-0.5, 0.5,-0.5, 1.0);
+  v_Normal = TOP_NORMAL;
+  v_UV = vec2(0.0, 0.0);
   EmitVertex();
   EndPrimitive();
 
   //Bottom
   gl_Position = gl_in[0].gl_Position + u_model_view_proj * vec4( 0.5,-0.5, 0.5, 1.0);
+  v_Normal = BOTTOM_NORMAL;
+  v_UV = vec2(1.0, 1.0);
   EmitVertex();
   gl_Position = gl_in[0].gl_Position + u_model_view_proj * vec4(-0.5,-0.5, 0.5, 1.0);
+  v_Normal = BOTTOM_NORMAL;
+  v_UV = vec2(0.0, 1.0);
   EmitVertex();
   gl_Position = gl_in[0].gl_Position + u_model_view_proj * vec4(-0.5,-0.5,-0.5, 1.0);
+  v_Normal = BOTTOM_NORMAL;
+  v_UV = vec2(0.0, 0.0);
   EmitVertex();
   EndPrimitive();
 
   gl_Position = gl_in[0].gl_Position + u_model_view_proj * vec4(-0.5,-0.5,-0.5, 1.0);
+  v_Normal = BOTTOM_NORMAL;
+  v_UV = vec2(0.0, 0.0);
   EmitVertex();
   gl_Position = gl_in[0].gl_Position + u_model_view_proj * vec4( 0.5,-0.5,-0.5, 1.0);
+  v_Normal = BOTTOM_NORMAL;
+  v_UV = vec2(1.0, 0.0);
   EmitVertex();
   gl_Position = gl_in[0].gl_Position + u_model_view_proj * vec4( 0.5,-0.5, 0.5, 1.0);
+  v_Normal = BOTTOM_NORMAL;
+  v_UV = vec2(1.0, 1.0);
   EmitVertex();
   EndPrimitive();
-
-  v_UV = vec2(1.0, 1.0);
 }
 
 /*

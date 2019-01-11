@@ -58,6 +58,7 @@ fn main() {
     //let vbuf = factory.create_vertex_buffer(&(c.vertex_data));
     //let slice = gfx::Slice::new_match_vertex_buffer(&vbuf);
 
+    /*
     let texels = [
         [0xff, 0xff, 0xff, 0x00],
         [0xff, 0x00, 0x00, 0x00],
@@ -68,29 +69,21 @@ fn main() {
         gfx::texture::Kind::D2(2, 2, gfx::texture::AaMode::Single),
         gfx::texture::Mipmap::Provided,
         &[&texels]).unwrap();
+    */
+
+    let texture = Texture::from_path(factory, "../assets/textures/dirt.png", Flip::None, &TextureSettings::new()).unwrap();
+    let texture_view = texture.view;
 
     let sinfo = gfx::texture::SamplerInfo::new(
         gfx::texture::FilterMethod::Bilinear,
         gfx::texture::WrapMode::Clamp);
 
     let glsl = opengl.to_glsl();
-    /*
-    let pso = factory.create_pipeline_simple(
-            Shaders::new()
-                //.set(GLSL::V1_20, include_str!("../assets/cube_120.glslv"))
-                .set(GLSL::V1_50, include_str!("../assets/vertex.glsl"))
-                .get(glsl).unwrap().as_bytes(),
-            Shaders::new()
-                //.set(GLSL::V1_20, include_str!("../assets/cube_120.glslf"))
-                .set(GLSL::V1_50, include_str!("../assets/fragment.glsl"))
-                .get(glsl).unwrap().as_bytes(),
-            pipe::new()
-        ).unwrap();
-    */
+    
     let shader_set = factory.create_shader_set_geometry(
-        Shaders::new().set(GLSL::V1_50, include_str!("../assets/vertex.glsl")).get(glsl).unwrap().as_bytes(),
-        Shaders::new().set(GLSL::V1_50, include_str!("../assets/geometry.glsl")).get(glsl).unwrap().as_bytes(),
-        Shaders::new().set(GLSL::V1_50, include_str!("../assets/fragment.glsl")).get(glsl).unwrap().as_bytes()
+        Shaders::new().set(GLSL::V1_50, include_str!("../assets/shaders/vertex.glsl")).get(glsl).unwrap().as_bytes(),
+        Shaders::new().set(GLSL::V1_50, include_str!("../assets/shaders/geometry.glsl")).get(glsl).unwrap().as_bytes(),
+        Shaders::new().set(GLSL::V1_50, include_str!("../assets/shaders/fragment.glsl")).get(glsl).unwrap().as_bytes()
     ).unwrap();
 
     let rasterizer = gfx::state::Rasterizer::new_fill().with_cull_back();
@@ -108,7 +101,7 @@ fn main() {
     let model = vecmath::mat4_id();
     let mut projection = get_projection(&window);
     let mut first_person = FirstPerson::new(
-        [1.0, 1.0, 1.0],
+        [-1.0, 1.0, -1.0],
         FirstPersonSettings::keyboard_wasd()
     );
 
