@@ -46,12 +46,26 @@ impl Chunk {
         for x in 0..64 {
             for y in 0..64 {
                 for z in 0..64 {
-                    if self.data[x][y][z] == 1 {
-                        self.vertex_data.push(Vertex::new([(x as i16)+(self.X*64), y as i16, (z as i16)+(self.Y*64)], [0,0]));
-                    } else if self.data[x][y][z] == 2 {
-                        self.vertex_data.push(Vertex::new([(x as i16)+(self.X*64), y as i16, (z as i16)+(self.Y*64)], [1,0]));
-                    } else if self.data[x][y][z] == 3 {
-                        self.vertex_data.push(Vertex::new([(x as i16)+(self.X*64), y as i16, (z as i16)+(self.Y*64)], [2,0]));
+                    let mut next_to_air = false;
+                    //Check if at the border of a chunk
+                    if x == 0 || y == 0 || z == 0 || x == 63 || y == 63 || z == 63 {
+                        next_to_air = true;
+                    }
+                    //Check air blocks
+                    if next_to_air != true {
+                        if self.data[x-1][y][z] == 0 || self.data[x+1][y][z] == 0 || self.data[x][y-1][z] == 0 || self.data[x][y+1][z] == 0 || self.data[x][y][z-1] == 0 || self.data[x][y][z+1] == 0 {
+                            next_to_air = true;
+                        }
+                    }
+
+                    if next_to_air {
+                        if self.data[x][y][z] == 1 {
+                            self.vertex_data.push(Vertex::new([(x as i16)+(self.X*64), y as i16, (z as i16)+(self.Y*64)], [0,0]));
+                        } else if self.data[x][y][z] == 2 {
+                            self.vertex_data.push(Vertex::new([(x as i16)+(self.X*64), y as i16, (z as i16)+(self.Y*64)], [1,0]));
+                        } else if self.data[x][y][z] == 3 {
+                            self.vertex_data.push(Vertex::new([(x as i16)+(self.X*64), y as i16, (z as i16)+(self.Y*64)], [2,0]));
+                        }
                     }
                 }
             }
