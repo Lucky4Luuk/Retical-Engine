@@ -1,5 +1,5 @@
 [package]
-name = "MinecraftClient"
+name = "Retical"
 version = "0.1.0"
 authors = ["Luuk van Oijen <lazyluuk.channel@gmail.com>"]
 edition = "2018"
@@ -12,3 +12,4 @@ vecmath = "0.3.0"
 camera_controllers = "0.26.0"
 shader_version = "0.3.0"
 rand = "0.6.4"
+fps_counter = "1.0.0"

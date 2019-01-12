@@ -1,3 +1,5 @@
+#![feature(box_syntax)]
+
 extern crate piston_window;
 extern crate vecmath;
 extern crate camera_controllers;
@@ -5,12 +7,14 @@ extern crate camera_controllers;
 extern crate gfx;
 extern crate shader_version;
 extern crate rand;
+extern crate fps_counter;
 
 mod vertex;
 use crate::vertex::Vertex;
 use rand::Rng;
 pub mod chunk;
 pub mod world;
+use fps_counter::FPSCounter;
 
 //-----------------------------------------
 // setting up vertex data and the pipeline;
@@ -45,7 +49,7 @@ fn main() {
     let opengl = OpenGL::V4_1;
 
     let mut window: PistonWindow =
-        WindowSettings::new("The Most Epic Minecraft Client Ever", [1280, 720])
+        WindowSettings::new("Retical", [1280, 720])
         .exit_on_esc(true)
         //.samples(4) //TODO: read documentation lol, gotta check if this is AA
         .opengl(opengl)
@@ -55,9 +59,10 @@ fn main() {
 
     let ref mut factory = window.factory.clone();
 
-    let c = chunk::Chunk::new();
+    //let c = chunk::Chunk::new();
+    let w = world::World::new();
 
-    let (vbuf, slice) = factory.create_vertex_buffer_with_slice(&(c.vertex_data), c.index_data.as_slice());
+    //let (vbuf, slice) = factory.create_vertex_buffer_with_slice(&(c.vertex_data), c.index_data.as_slice());
     //let vbuf = factory.create_vertex_buffer(&(c.vertex_data));
     //let slice = gfx::Slice::new_match_vertex_buffer(&vbuf);
 
@@ -108,39 +113,68 @@ fn main() {
         FirstPersonSettings::keyboard_wasd()
     );
 
-    let mut data = pipe::Data {
-            vbuf: vbuf.clone(),
-            u_model_view_proj: [[0.0; 4]; 4],
-            u_view_dir: [0.0; 3],
-            u_tex_size: 16.0,
-            u_atlas_size: 256.0,
-            t_color: (texture_view, factory.create_sampler(sinfo)),
-            out_color: window.output_color.clone(),
-            out_depth: window.output_stencil.clone(),
-        };
+    let mut fps_c = FPSCounter::new();
+    let mut fps: usize = 0;
+
+    let mut glyphs = Glyphs::new("../assets/fonts/OpenSans/OpenSans-Light.ttf", window.factory.clone(), TextureSettings::new()).unwrap();
 
     while let Some(e) = window.next() {
         first_person.event(&e);
 
-        window.draw_3d(&e, |window| {
-            let args = e.render_args().unwrap();
+        window.encoder.clear(&window.output_color, [0.3, 0.3, 0.3, 1.0]);
+        window.encoder.clear_depth(&window.output_stencil, 1.0);
 
-            window.encoder.clear(&window.output_color, [0.3, 0.3, 0.3, 1.0]);
-            window.encoder.clear_depth(&window.output_stencil, 1.0);
+        for i in 0..w.loaded_chunks.len() {
+            let vertex_data = w.chunks[w.loaded_chunks[i]].vertex_data.clone();
+            let index_data = w.chunks[w.loaded_chunks[i]].index_data.clone();
+            let (vbuf, slice) = window.factory.create_vertex_buffer_with_slice(&(vertex_data), index_data.as_slice());
 
-            data.u_model_view_proj = model_view_projection(
-                model,
-                first_person.camera(args.ext_dt).orthogonal(),
-                projection
-            );
-            data.u_view_dir = first_person.direction;
-            window.encoder.draw(&slice, &pso, &data);
+            let mut data = pipe::Data {
+                    vbuf: vbuf.clone(),
+                    u_model_view_proj: [[0.0; 4]; 4],
+                    u_view_dir: [0.0; 3],
+                    u_tex_size: 16.0,
+                    u_atlas_size: 256.0,
+                    t_color: (texture_view.clone(), factory.create_sampler(sinfo)),
+                    out_color: window.output_color.clone(),
+                    out_depth: window.output_stencil.clone(),
+                };
+
+            window.draw_3d(&e, |window| {
+                let args = e.render_args().unwrap();
+
+                data.u_model_view_proj = model_view_projection(
+                    model,
+                    first_person.camera(args.ext_dt).orthogonal(),
+                    projection
+                );
+                data.u_view_dir = first_person.direction;
+
+                //window.encoder.draw(&slice, &pso, &data);
+                //w.draw(first_person.position[0], first_person.position[2], window);
+
+                window.encoder.draw(&slice, &pso, &data);
+            });
+
+            if let Some(_) = e.resize_args() {
+                projection = get_projection(&window);
+                data.out_color = window.output_color.clone();
+                data.out_depth = window.output_stencil.clone();
+            }
+        }
+
+        window.draw_2d(&e, |c, g| {
+            let transform = c.transform.trans(5.0, 16.0);
+
+            //clear([0.0, 0.0, 0.0, 1.0], g);
+            text::Text::new_color([0.0, 1.0, 0.0, 1.0], 16).draw(
+                &*format!("{} FPS", fps),
+                &mut glyphs,
+                &c.draw_state,
+                transform, g
+            ).unwrap();
         });
 
-        if let Some(_) = e.resize_args() {
-            projection = get_projection(&window);
-            data.out_color = window.output_color.clone();
-            data.out_depth = window.output_stencil.clone();
-        }
+        fps = fps_c.tick();
     }
 }

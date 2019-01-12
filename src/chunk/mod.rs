@@ -3,25 +3,25 @@ use rand::Rng;
 use std::num;
 
 pub struct Chunk {
-    data: [[[u8; 64]; 64]; 64],
-    X: i16,
-    Y: i16,
-    loaded: bool,
+    data: std::boxed::Box<[[[u8; 64]; 64]; 64]>,
+    X: i32,
+    Y: i32,
+    pub loaded: bool,
     pub vertex_data: Vec<Vertex>,
     pub index_data: Vec<u32>,
 }
 
 impl Chunk {
-    pub fn new() -> Chunk {
+    pub fn new(x: i32, y: i32) -> Chunk {
         let mut tmp = Chunk {
-            data: [[[0; 64]; 64]; 64],
-            X: 0,
-            Y: 0,
+            data: box [[[0; 64]; 64]; 64],
+            X: x,
+            Y: y,
             loaded: true,
             vertex_data: vec![
-            Vertex::new([-1,-1,-1], [0,0]),
-            Vertex::new([ 0, 0,-1], [0,0]),
-            Vertex::new([ 1,-1,-1], [0,0]),
+            Vertex::new([-1.0,-1.0,-1.0], [0,0]),
+            Vertex::new([ 0.0, 0.0,-1.0], [0,0]),
+            Vertex::new([ 1.0,-1.0,-1.0], [0,0]),
             ],
             index_data: vec![0, 1, 2],
         };
@@ -66,11 +66,11 @@ impl Chunk {
 
                     if next_to_air {
                         if self.data[x][y][z] == 1 {
-                            self.vertex_data.push(Vertex::new([(x as i16)+(self.X*64), y as i16, (z as i16)+(self.Y*64)], [0,0]));
+                            self.vertex_data.push(Vertex::new([(x as f32)+(self.X as f32)*64.0, y as f32, (z as f32)+(self.Y as f32)*64.0], [0,0]));
                         } else if self.data[x][y][z] == 2 {
-                            self.vertex_data.push(Vertex::new([(x as i16)+(self.X*64), y as i16, (z as i16)+(self.Y*64)], [1,0]));
+                            self.vertex_data.push(Vertex::new([(x as f32)+(self.X as f32)*64.0, y as f32, (z as f32)+(self.Y as f32)*64.0], [1,0]));
                         } else if self.data[x][y][z] == 3 {
-                            self.vertex_data.push(Vertex::new([(x as i16)+(self.X*64), y as i16, (z as i16)+(self.Y*64)], [2,0]));
+                            self.vertex_data.push(Vertex::new([(x as f32)+(self.X as f32)*64.0, y as f32, (z as f32)+(self.Y as f32)*64.0], [2,0]));
                         }
                     }
                 }
@@ -79,8 +79,8 @@ impl Chunk {
         for i in 0..self.vertex_data.len() {
             self.index_data.push(i as u32);
         }
-        println!("{} vertices", self.vertex_data.len());
-        println!("{} indices", self.index_data.len());
+        //println!("{} vertices", self.vertex_data.len());
+        //println!("{} indices", self.index_data.len());
         //TODO: Make this actually gather all vertices in here, aka all voxels. Will be abstracted into chunk classes however.
         //RhoneRanger had a great suggestion.
         //If we order the data according to the block type, we could use a simple
