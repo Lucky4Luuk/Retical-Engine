@@ -36,7 +36,7 @@ impl Chunk {
         return tmp;
     }
 
-    pub fn update_block(&mut self, x: u8, y: u8, z: u8, block_type: u8) {
+    pub fn set_block(&mut self, x: u8, y: u8, z: u8, block_type: u8) {
         if x < 64 && y < 64 && z < 64 {
             self.data[x as usize][y as usize][z as usize] = block_type;
         }
@@ -45,6 +45,22 @@ impl Chunk {
         //figured out how I want to remove a certain vertex from the vertex list
         self.update_all();
     }
+
+    pub fn set_block_u32(&mut self, x: u32, y: u32, z: u32, block_type: u8) {
+        if x < 64 && y < 64 && z < 64 {
+            self.data[x as usize][y as usize][z as usize] = block_type;
+        }
+
+        //Update the chunk fully because I haven't yet
+        //figured out how I want to remove a certain vertex from the vertex list
+        self.update_all();
+    }
+
+    pub fn get_block(self, x: u8, y: u8, z: u8) -> u8 {
+        return self.data[x as usize][y as usize][z as usize];
+    }
+    //get_block is kind of redundant as the data is already
+    //accessible from the outside
 
     pub fn update_all(&mut self) {
         self.vertex_data = Vec::new();
@@ -81,7 +97,6 @@ impl Chunk {
         }
         //println!("{} vertices", self.vertex_data.len());
         //println!("{} indices", self.index_data.len());
-        //TODO: Make this actually gather all vertices in here, aka all voxels. Will be abstracted into chunk classes however.
         //RhoneRanger had a great suggestion.
         //If we order the data according to the block type, we could use a simple
         //if-elseif statement in the geometry shader to define multiple block shapes.

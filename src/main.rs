@@ -15,6 +15,8 @@ use rand::Rng;
 pub mod chunk;
 pub mod world;
 use fps_counter::FPSCounter;
+use std::time::{Duration, Instant};
+use std::num;
 
 //-----------------------------------------
 // setting up vertex data and the pipeline;
@@ -60,7 +62,7 @@ fn main() {
     let ref mut factory = window.factory.clone();
 
     //let c = chunk::Chunk::new();
-    let w = world::World::new();
+    let mut w = world::World::new();
 
     //let (vbuf, slice) = factory.create_vertex_buffer_with_slice(&(c.vertex_data), c.index_data.as_slice());
     //let vbuf = factory.create_vertex_buffer(&(c.vertex_data));
@@ -115,16 +117,22 @@ fn main() {
 
     let mut fps_c = FPSCounter::new();
     let mut fps: usize = 0;
+    let mut total_time = 0;
+    let mut delta_time = 0;
 
     let mut glyphs = Glyphs::new("../assets/fonts/OpenSans/OpenSans-Light.ttf", window.factory.clone(), TextureSettings::new()).unwrap();
 
     while let Some(e) = window.next() {
+        let now = Instant::now();
+
         first_person.event(&e);
 
         window.encoder.clear(&window.output_color, [0.3, 0.3, 0.3, 1.0]);
         window.encoder.clear_depth(&window.output_stencil, 1.0);
 
         for i in 0..w.loaded_chunks.len() {
+            let height = (total_time as f64).sin() * 5.0;
+            w.chunks[w.loaded_chunks[i]].set_block_u32(0, 0, 0, if height > 0.0 {0} else {1});
             let vertex_data = w.chunks[w.loaded_chunks[i]].vertex_data.clone();
             let index_data = w.chunks[w.loaded_chunks[i]].index_data.clone();
             let (vbuf, slice) = window.factory.create_vertex_buffer_with_slice(&(vertex_data), index_data.as_slice());
@@ -164,17 +172,26 @@ fn main() {
         }
 
         window.draw_2d(&e, |c, g| {
-            let transform = c.transform.trans(5.0, 16.0);
+            let transform_fps = c.transform.trans(5.0, 16.0);
+            let transform_ms = c.transform.trans(5.0, 32.0);
 
             //clear([0.0, 0.0, 0.0, 1.0], g);
             text::Text::new_color([0.0, 1.0, 0.0, 1.0], 16).draw(
                 &*format!("{} FPS", fps),
                 &mut glyphs,
                 &c.draw_state,
-                transform, g
+                transform_fps, g
             ).unwrap();
+            text::Text::new_color([0.0, 1.0, 0.0, 1.0], 16).draw(
+                &*format!("{} MS", delta_time),
+                &mut glyphs,
+                &c.draw_state,
+                transform_ms, g
+            )
         });
 
+        delta_time = now.elapsed().as_millis();
+        total_time += delta_time;
         fps = fps_c.tick();
     }
 }
