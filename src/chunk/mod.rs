@@ -3,18 +3,19 @@ use rand::Rng;
 use std::num;
 
 pub struct Chunk {
-    data: std::boxed::Box<[[[ [usize; 3]; 64]; 64]; 64]>,
+    data: std::boxed::Box<[[[ [usize; 2]; 64]; 64]; 64]>,
     X: i32,
     Y: i32,
     pub loaded: bool,
     pub vertex_data: Vec<Vertex>,
     pub index_data: Vec<u32>,
+    pub changed: bool,
 }
 
 impl Chunk {
     pub fn new(x: i32, y: i32) -> Chunk {
         let mut tmp = Chunk {
-            data: box [[[ [0; 3]; 64]; 64]; 64],
+            data: box [[[ [0; 2]; 64]; 64]; 64],
             X: x,
             Y: y,
             loaded: true,
@@ -24,11 +25,12 @@ impl Chunk {
             Vertex::new([ 1.0,-1.0,-1.0], [0,0]),
             ],
             index_data: vec![0, 1, 2],
+            changed: false,
         };
         for x in 0..64 {
             for y in 0..64 {
                 for z in 0..64 {
-                    tmp.data[x][y][z] = [rand::thread_rng().gen_range(1, 4), 0,0];
+                    tmp.data[x][y][z] = [rand::thread_rng().gen_range(1, 4), 0];
                 }
             }
         }
@@ -76,6 +78,7 @@ impl Chunk {
         if x == 0 || y == 0 || z == 0 || x == 63 || y == 63 || z == 63 {
             next_to_air = true;
         }
+
         //Check air blocks
         if next_to_air != true {
             if self.data[x-1][y][z][0] == 0 || self.data[x+1][y][z][0] == 0 || self.data[x][y-1][z][0] == 0 || self.data[x][y+1][z][0] == 0 || self.data[x][y][z-1][0] == 0 || self.data[x][y][z+1][0] == 0 {
@@ -98,22 +101,31 @@ impl Chunk {
                 }
 
                 if self.data[x][y][z][0] > 0 {
+                    i = self.vertex_data.len();
+                    self.data[x][y][z][1] = i;
+                }
+
+                self.changed = true;
+
+                /*
+                if self.data[x][y][z][0] > 0 {
                     i = self.vertex_data.len() - 1;
                     self.index_data.push(i as u32);
-                    self.data[x][y][z][1] = i;
-                    self.data[x][y][z][2] = self.index_data.len() - 1;
+                    self.data[x][y][z][1] = i+1;
+                    self.data[x][y][z][2] = self.index_data.len();
                 } else {
                     //println!("block {} {} {} ({}) is an air block", x,y,z, i);
                 }
+                */
             } else {
                 //println!("block {} {} {} ({}) already exists in Vertex Buffer", x,y,z, i);
                 if self.data[x][y][z][0] == 0 {
                     //println!("block {} {} {} ({}) is an air block and will be deleted", x,y,z, i);
-                    let j = self.data[x][y][z][2]; //Index in index buffer
+                    //let j = self.data[x][y][z][2]; //Index in index buffer
                     self.vertex_data.remove(i-1);
-                    self.index_data.remove(j-1);
+                    //self.index_data.remove(j-1);
                     self.data[x][y][z][1] = 0;
-                    self.data[x][y][z][2] = 0;
+                    //self.data[x][y][z][2] = 0;
                     //println!("{}", self.data[x][y][z][1]);
                 } else if self.data[x][y][z][0] == 1 {
                     self.vertex_data[i-1] = Vertex::new([(x as f32)+(self.X as f32)*64.0, y as f32, (z as f32)+(self.Y as f32)*64.0], [0,0]);
@@ -125,14 +137,16 @@ impl Chunk {
             }
         } else {
             let i = self.data[x][y][z][1]; //Index in vertex buffer
-            let j = self.data[x][y][z][2]; //Index in index buffer
+            //let j = self.data[x][y][z][2]; //Index in index buffer
             if i > 0 {
                 self.vertex_data.remove(i-1);
-                self.index_data.remove(j-1);
+                //self.index_data.remove(j-1);
                 self.data[x][y][z][1] = 0;
-                self.data[x][y][z][2] = 0;
+                //self.data[x][y][z][2] = 0;
             }
         }
+
+        //self.changed = true;
     }
 
     pub fn get_block(self, x: u8, y: u8, z: u8) -> usize {
@@ -143,8 +157,7 @@ impl Chunk {
 
     pub fn update_all(&mut self) {
         self.vertex_data = Vec::new();
-        self.index_data = Vec::new();
-        let mut i = 0;
+        //self.index_data = Vec::new();
 
         for x in 0..64 {
             for y in 0..64 {
@@ -162,5 +175,17 @@ impl Chunk {
         //Another option is to encode the blocks as a 16x16x16 3D texture, so that each block has it's own fully fledged 3D voxel model.
         //That'd make more sense for an actual engine, perhaps.
         //I could combine this, for a performance increase.
+    }
+
+    pub fn get_index_data(&mut self) -> Vec<u32> {
+        if self.changed {
+            self.index_data = Vec::new();
+            for i in 0..self.vertex_data.len() {
+                self.index_data.push(i as u32);
+            }
+            self.changed = false;
+        }
+
+        return self.index_data.clone();
     }
 }

@@ -70,6 +70,11 @@ fn main() {
     w.chunks[w.loaded_chunks[0]].set_block(0, 0, 0, 0);
     println!("Updating a chunk took {} milliseconds.", t.elapsed().as_millis());
 
+    t = Instant::now();
+    //w.chunks[w.loaded_chunks[0]].changed = true;
+    w.chunks[w.loaded_chunks[0]].get_index_data();
+    println!("Generating the index buffer took {} milliseconds.", t.elapsed().as_millis());
+
     //let (vbuf, slice) = factory.create_vertex_buffer_with_slice(&(c.vertex_data), c.index_data.as_slice());
     //let vbuf = factory.create_vertex_buffer(&(c.vertex_data));
     //let slice = gfx::Slice::new_match_vertex_buffer(&vbuf);
@@ -137,10 +142,10 @@ fn main() {
         window.encoder.clear_depth(&window.output_stencil, 1.0);
 
         for i in 0..w.loaded_chunks.len() {
-            //let exists = total_time % 5;
-            //w.chunks[w.loaded_chunks[i]].set_block(0, 0, 0, if exists == 0 {0} else {1});
+            let exists = total_time % 2;
+            w.chunks[w.loaded_chunks[i]].set_block(0, 0, 0, exists as usize);
             let vertex_data = w.chunks[w.loaded_chunks[i]].vertex_data.clone();
-            let index_data = w.chunks[w.loaded_chunks[i]].index_data.clone();
+            let index_data = w.chunks[w.loaded_chunks[i]].get_index_data();
             let (vbuf, slice) = window.factory.create_vertex_buffer_with_slice(&(vertex_data), index_data.as_slice());
 
             let mut data = pipe::Data {
